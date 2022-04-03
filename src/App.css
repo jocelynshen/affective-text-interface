@@ -41,3 +41,7 @@ label {
 #result {
   color: #000;
 }
+
+.tabs-container {
+  padding: 20px;
+}
