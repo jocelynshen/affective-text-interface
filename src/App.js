@@ -10,7 +10,7 @@ import { Container } from 'react-bootstrap';
 class App extends Component {
   constructor(props) {
     super(props)
- 
+
     this.state = {
       textSamples: [],
       audioDetails: {
@@ -40,7 +40,7 @@ class App extends Component {
       console.log(error);
     })
   }
- 
+
   handleAudioStop(data) {
     console.log(data)
     this.setState({ audioDetails: data });
@@ -68,7 +68,16 @@ class App extends Component {
     .then(function (response) {
       // handle success
       console.log(response);
-      self.setState({outputData: response.data.output});
+      const response_data = response.data.output.data;
+      let json_responses = new Array(response_data.length);
+      // response_data.map((entry, i) => {(JSON.parse(entry))})
+      console.log(response_data)
+      for (var i=0;i<response_data.length;i++) {
+        json_responses[i] = JSON.parse(response_data[i]);
+      }
+      console.log(json_responses)
+      self.setState({outputData: json_responses});
+
     })
     .catch(function (error) {
       // handle error
@@ -114,8 +123,8 @@ class App extends Component {
 
   render() {
     return (
-      <React.Fragment> 
-        <Tabs className="m-3">        
+      <React.Fragment>
+        <Tabs className="m-3">
           {this.state.textSamples.map((text, i) => (
             <Tab className="m-3" eventKey={i} key={i} title={`Sample ${i}`}>
               {text}
@@ -140,13 +149,13 @@ class App extends Component {
           <br/>
           {this.state.outputData.map((entry, i) =>
             (
-              <span key={i} style={this.generateStyle(entry.features)}>
-                {` ${entry.text} `}
+              <span key={i} style={this.generateStyle(entry)}>
+                {` ${entry.word_groups} `}
               </span>
             )
           )}
         </Container>
-        
+
       </React.Fragment>
 
     )
