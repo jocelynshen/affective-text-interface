@@ -7,6 +7,78 @@ import Tab from 'react-bootstrap/Tab';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container } from 'react-bootstrap';
 
+const EMOJI_MAP = {
+  0: "😂",
+  1: "😒",
+  2: "😩",
+  3: "😭",
+  4: "😍",
+  5: "😔",
+  6: "👌",
+  7: "😊",
+  8: "❤️‍🩹",
+  9: "😏",
+  10: "😁",
+  11: "🎶",
+  12: "😳",
+  13: "💯",
+  14: "😴",
+  15: "😌",
+  16: "☺️",
+  17: "🙌",
+  18: "💕",
+  19: "😑",
+  20: "😅",
+  21: "🙏",
+  22: "😕",
+  23: "😘",
+  24: "♥️",
+  25: "😐",
+  26: "💁",
+  27: "😞",
+  28: "🙈",
+  29: "😫",
+  30: "✌️",
+  31: "😎",
+  32: "😡",
+  33: "👍",
+  34: "😢",
+  35: "😪",
+  36: "😋",
+  37: "😤",
+  38: "✋",
+  39: "😷",
+  40: "👏",
+  41: "👀",
+  42: "🔫",
+  43: "😣",
+  44: "😈",
+  45: "😓",
+  46: "💔",
+  47: "♡",
+  48: "🎧",
+  49: "🙊",
+  50: "😉",
+  51: "💀",
+  52: "😖",
+  53: "😄",
+  54: "😜",
+  55: "😠",
+  56: "🙅",
+  57: "💪",
+  58: "👊",
+  59: "💜",
+  60: "💖",
+  61: "💙",
+  62: "😬",
+  63: "✨",
+
+
+
+
+
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -57,6 +129,7 @@ class App extends Component {
     //     // handle error
     //     console.log(error);
     //   })
+
     const self = this;
     const formData = new FormData();
     formData.append("audioFile", file);
@@ -97,6 +170,17 @@ class App extends Component {
       }
     }
     this.setState({ audioDetails: reset });
+  }
+
+  getEmojis(emojis) {
+    if (emojis.length == 0) return "";
+    let emoji_unicode = [];
+    for (var i=0;i<emojis.length;i++) {
+      for (var j=2; j<7;j++) {
+        emoji_unicode.push(EMOJI_MAP[emojis[i][j]])
+      }
+    }
+    return emoji_unicode.join("")
   }
 
   generateStyle(features) {
@@ -146,11 +230,15 @@ class App extends Component {
         />
         <Container fluid>
           Result
+          {/*<span role="img" aria-label="label">*/}
+          {/*    {String.fromCodePoint("0x263a")}*/}
+          {/*</span>*/}
           <br/>
           {this.state.outputData.map((entry, i) =>
             (
               <span key={i} style={this.generateStyle(entry)}>
-                {` ${entry.word_groups} `}
+                {` ${entry.word_groups} ` }
+                {this.getEmojis(entry.emojis)}
               </span>
             )
           )}
