@@ -172,15 +172,32 @@ class App extends Component {
     this.setState({ audioDetails: reset });
   }
 
-  getEmojis(emojis) {
-    if (emojis.length == 0) return "";
-    let emoji_unicode = [];
-    for (var i=0;i<emojis.length;i++) {
-      for (var j=2; j<7;j++) {
-        emoji_unicode.push(EMOJI_MAP[emojis[i][j]])
+  processText(entry) {
+    const text = entry.word_groups
+    const final_text_arr = [];
+    const emojis = this.getEmojis(entry.emojis)
+    const arr = text.split(".")
+    for (var i=0;i<arr.length;i++){
+      if (arr[i].length > 0) {
+        final_text_arr.push(arr[i])
+        if (emojis[i]) {
+          final_text_arr.push(emojis[i].join("") + ". ")
+        }
       }
     }
-    return emoji_unicode.join("")
+    return final_text_arr.join("")
+  }
+
+  getEmojis(emojis) {
+    let emoji_unicode = [];
+    for (var i=0;i<emojis.length;i++) {
+      let temp_emojis = [];
+      for (var j=2; j<7;j++) {
+        temp_emojis.push(EMOJI_MAP[emojis[i][j]])
+      }
+      emoji_unicode.push(temp_emojis);
+    }
+    return emoji_unicode
   }
 
   generateStyle(features) {
@@ -237,8 +254,8 @@ class App extends Component {
           {this.state.outputData.map((entry, i) =>
             (
               <span key={i} style={this.generateStyle(entry)}>
-                {` ${entry.word_groups} ` }
-                {this.getEmojis(entry.emojis)}
+                {` ${this.processText(entry)} ` }
+                {/*{this.getEmojis(entry.emojis)}*/}
               </span>
             )
           )}
