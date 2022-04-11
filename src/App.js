@@ -7,6 +7,8 @@ import Tab from 'react-bootstrap/Tab';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container } from 'react-bootstrap';
 
+const BASE_URL = "http://127.0.0.1:5010/";
+
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -101,7 +103,7 @@ class App extends Component {
 
   componentDidMount() {
     const self = this;
-    axios.get("http://127.0.0.1:5000/textSamples/")
+    axios.get(BASE_URL + "textSamples/")
     .then(function (response) {
       // handle success
       self.setState({textSamples: response.data.textSamples})
@@ -133,7 +135,7 @@ class App extends Component {
     const self = this;
     const formData = new FormData();
     formData.append("audioFile", file);
-    axios.post("http://127.0.0.1:5000/upload/", formData, {
+    axios.post(BASE_URL + "upload/", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -218,7 +220,7 @@ class App extends Component {
     const fontSize = `${Math.round(loudness * 72)}pt`;
     style.fontSize = fontSize;
     style.color = labelToColor[features.emotion_label];
-    style.opacity = features.confidence;
+    // style.opacity = features.confidence;
     return style
   }
 
