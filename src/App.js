@@ -6,9 +6,10 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Container } from 'react-bootstrap';
+import ReactLoading from "react-loading";
 
-const BASE_URL = "http://127.0.0.1:5010/";
-
+// const BASE_URL = "http://127.0.0.1:5010/";
+const BASE_URL = "http://wall-e.media.mit.edu:5010/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -74,11 +75,6 @@ const EMOJI_MAP = {
   61: "💙",
   62: "😬",
   63: "✨",
-
-
-
-
-
 }
 
 class App extends Component {
@@ -98,6 +94,7 @@ class App extends Component {
         }
       },
       outputData: [],
+      loading: false
     }
   }
 
@@ -122,6 +119,7 @@ class App extends Component {
 
   handleAudioUpload(file) {
     console.log(file);
+    this.setState({loading: true});
     // axios.get("http://127.0.0.1:5000/testing/")
     //   .then(function (response) {
     //     // handle success
@@ -151,6 +149,7 @@ class App extends Component {
         json_responses[i] = JSON.parse(response_data[i]);
       }
       console.log(json_responses)
+      self.setState({loading: false})
       self.setState({outputData: json_responses});
 
     })
@@ -194,7 +193,7 @@ class App extends Component {
     let emoji_unicode = [];
     for (var i=0;i<emojis.length;i++) {
       let temp_emojis = [];
-      for (var j=2; j<7;j++) {
+      for (var j=2; j<3;j++) {
         temp_emojis.push(EMOJI_MAP[emojis[i][j]])
       }
       emoji_unicode.push(temp_emojis);
@@ -253,6 +252,8 @@ class App extends Component {
           {/*    {String.fromCodePoint("0x263a")}*/}
           {/*</span>*/}
           <br/>
+          {this.state.loading ? <ReactLoading type="bubbles" color="#0000FF"
+                         height={100} width={50}/>: <></>}
           {this.state.outputData.map((entry, i) =>
             (
               <span key={i} style={this.generateStyle(entry)}>
