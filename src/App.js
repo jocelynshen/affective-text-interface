@@ -8,8 +8,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { Container } from 'react-bootstrap';
 import ReactLoading from "react-loading";
 
-// const BASE_URL = "http://127.0.0.1:5010/";
-const BASE_URL = "http://wall-e.media.mit.edu:5010/";
+const BASE_URL = "http://10.31.83.90:5000/";
+// const BASE_URL = "http://wall-e.media.mit.edu:5000/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -203,15 +203,9 @@ class App extends Component {
 
   generateStyle(features) {
     const labelToColor = {
-      "neutral": "black",
-      "calm": "cornflowerblue",
-      "happy": "gold",
-      "sad": "blue",
-      "angry": "maroon",
-      "fear": "red",
-      "disgust": "olive",
-      "ps": "deeppink",
-      "boredom": "gray"
+      "neu": "black",
+      "neg": "red",
+      "pos": "gold",
     }
 
     const style = {};
