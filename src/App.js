@@ -223,7 +223,7 @@ class App extends Component {
       <React.Fragment>
         <Tabs className="m-3">
           {this.state.textSamples.map((text, i) => (
-            <Tab className="m-3" eventKey={i} key={i} title={`Sample ${i}`}>
+            <Tab className="m-3" eventKey={i} key={i} title={`Prompt ${i}`}>
               {text}
             </Tab>
           ))}
