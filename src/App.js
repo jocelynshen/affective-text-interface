@@ -8,8 +8,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { Container } from 'react-bootstrap';
 import ReactLoading from "react-loading";
 
-const BASE_URL = "http://10.31.83.90:5000/";
-// const BASE_URL = "http://wall-e.media.mit.edu:5000/";
+// const BASE_URL = "http://10.31.83.90:5000/";
+const BASE_URL = "http://wall-e.media.mit.edu:5000/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -133,6 +133,7 @@ class App extends Component {
     const self = this;
     const formData = new FormData();
     formData.append("audioFile", file);
+    formData.append("groupSize", 3)
     axios.post(BASE_URL + "upload/", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
