@@ -213,25 +213,26 @@ class App extends Component {
     const style = {};
     const loudness = features.loudness;
     // const fontSize = `${Math.round(loudness * 72)}pt`;
+    // TODO: Pick a constant font size
     const fontSize = "20px";
     style.fontSize = fontSize;
     style.color = labelToColor[features.emotion_label];
     const speakingLength =
       features.time_interval[1] - features.time_interval[0];
     const speakingRate =
-      features.word_groups.split(" ").length / speakingLength;
+      features.word_groups.replace(/\s/g, "").length / speakingLength;
 
-    // Normal: 1-4 words per second
+    // Normal: 8-18 letters per second
     // WCAG guidelines: 0.12 times the font size (16px = 1rem)
-    if (speakingRate > 1 && speakingRate < 4) {
+    if (speakingRate > 8 && speakingRate < 18) {
       style.letterSpacing = "normal";
     }
-    // Fast: >= 4 words per second
-    else if (speakingRate >= 4) {
+    // Fast: >= 8 letters per second
+    else if (speakingRate >= 18) {
       style.letterSpacing = "-.1rem";
     }
-    // Slow: <= 1.5 words per second
-    else if (speakingRate <= 1) {
+    // Slow: <= 18 letters per second
+    else if (speakingRate <= 8) {
       style.letterSpacing = ".2rem";
     }
     // console.log(speakingRate);
