@@ -149,10 +149,10 @@ class App extends Component {
       loading: false,
       groupSize: 3,
       promptNum: 0,
-      angerColor: "red",
-      excitedColor: "yellow",
-      calmColor: "green",
-      sadColor: "blue",
+      negColor: "red",
+      // excitedColor: "yellow",
+      posColor: "green",
+      // sadColor: "blue",
       neutralColor: "black",
       includeEmojis: false,
     }
@@ -217,6 +217,7 @@ class App extends Component {
     })
     .catch(function (error) {
       // handle error
+      self.setState({loading: false})
       console.log(error);
     })
   }
@@ -236,15 +237,20 @@ class App extends Component {
   }
 
   processText(entry) {
+    console.log("ENTRY", entry)
     const text = entry.word_groups;
     const final_text_arr = [];
     const emojis = this.getEmojis(entry.emojis);
     const arr = text.split(".");
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i].length > 0) {
-        final_text_arr.push(arr[i]);
-        if (emojis[i]) {
-          final_text_arr.push(emojis[i].join("") + ". ");
+    if (arr.length == 1) {
+      final_text_arr.push(arr[0]);
+    } else {
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].length > 0) {
+          final_text_arr.push(arr[i]);
+          if (emojis[i]) {
+            final_text_arr.push(emojis[i].join("") + ". ");
+          }
         }
       }
     }
@@ -271,24 +277,34 @@ class App extends Component {
   generateStyle(features) {
     const style = {};
     const loudness = features.loudness;
+    // const allLoudness = features.all_loudness;
+    // const average = (array) => array.reduce((a, b) => a + b) / array.length;
+    // const avgLoudness = average(allLoudness);
     const fontWeight = `${Math.round(loudness * 9) * 100}`;
     style.fontSize = "24pt";
     style.fontWeight = fontWeight;
     style.color = EMOTION_COLORS[this.state.neutralColor]; // Neutral
-    if (loudness > .66) {
-      if (features.emotion_label === "neg") {
-        style.color = EMOTION_COLORS[this.state.angerColor]; // Angry
-      } else if (features.emotion_label === "pos") {
-        style.color = EMOTION_COLORS[this.state.excitedColor]; // Excited
-      }
-    } else if (loudness < .33) {
-      if (features.emotion_label === "neg") {
-        style.color = EMOTION_COLORS[this.state.sadColor]; // Sad
-      } else if (features.emotion_label === "pos") {
-        style.color = EMOTION_COLORS[this.state.calmColor]; // Calm
-      }
-    }
 
+    if (features.emotion_label === "neg") {
+      style.color = EMOTION_COLORS[this.state.negColor];
+    } else if (features.emotion_label === "pos") {
+      style.color = EMOTION_COLORS[this.state.posColor];
+    } else {
+      style.color = EMOTION_COLORS[this.state.neutralColor];
+    }
+    // if (loudness > avgLoudness) {
+    //   if (features.emotion_label === "neg") {
+    //     style.color = EMOTION_COLORS[this.state.angerColor]; // Angry
+    //   } else if (features.emotion_label === "pos") {
+    //     style.color = EMOTION_COLORS[this.state.excitedColor]; // Excited
+    //   }
+    // } else {
+    //   if (features.emotion_label === "neg") {
+    //     style.color = EMOTION_COLORS[this.state.sadColor]; // Sad
+    //   } else if (features.emotion_label === "pos") {
+    //     style.color = EMOTION_COLORS[this.state.calmColor]; // Calm
+    //   }
+    // }
     const speakingLength =
       features.time_interval[1] - features.time_interval[0];
     const speakingRate =
@@ -375,11 +391,11 @@ class App extends Component {
           </Box>
           <Box sx={{ width: 120 }}>
             <FormControl fullWidth>
-              <InputLabel>Anger Color</InputLabel>
+              <InputLabel>Negative Color</InputLabel>
               <Select
-                value={this.state.angerColor}
-                label="Anger Color"
-                onChange={(e) => {this.setState({angerColor: e.target.value})}}
+                value={this.state.negColor}
+                label="Negative Color"
+                onChange={(e) => {this.setState({negColor: e.target.value})}}
               >
                 {Object.keys(EMOTION_COLORS).map((color, i) => (
                   <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
@@ -387,41 +403,41 @@ class App extends Component {
               </Select>
             </FormControl>
           </Box>
+          {/*<Box sx={{ width: 120 }}>*/}
+          {/*  <FormControl fullWidth>*/}
+          {/*    <InputLabel>Excited Color</InputLabel>*/}
+          {/*    <Select*/}
+          {/*      value={this.state.excitedColor}*/}
+          {/*      label="Excited Color"*/}
+          {/*      onChange={(e) => {this.setState({excitedColor: e.target.value})}}*/}
+          {/*    >*/}
+          {/*      {Object.keys(EMOTION_COLORS).map((color, i) => (*/}
+          {/*        <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>*/}
+          {/*      ))}*/}
+          {/*    </Select>*/}
+          {/*  </FormControl>*/}
+          {/*</Box>*/}
+          {/*<Box sx={{ width: 120 }}>*/}
+          {/*  <FormControl fullWidth>*/}
+          {/*    <InputLabel>Sad Color</InputLabel>*/}
+          {/*    <Select*/}
+          {/*      value={this.state.sadColor}*/}
+          {/*      label="Sad Color"*/}
+          {/*      onChange={(e) => {this.setState({sadColor: e.target.value})}}*/}
+          {/*    >*/}
+          {/*      {Object.keys(EMOTION_COLORS).map((color, i) => (*/}
+          {/*        <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>*/}
+          {/*      ))}*/}
+          {/*    </Select>*/}
+          {/*  </FormControl>*/}
+          {/*</Box>*/}
           <Box sx={{ width: 120 }}>
             <FormControl fullWidth>
-              <InputLabel>Excited Color</InputLabel>
+              <InputLabel>Positive Color</InputLabel>
               <Select
-                value={this.state.excitedColor}
-                label="Excited Color"
-                onChange={(e) => {this.setState({excitedColor: e.target.value})}}
-              >
-                {Object.keys(EMOTION_COLORS).map((color, i) => (
-                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ width: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel>Sad Color</InputLabel>
-              <Select
-                value={this.state.sadColor}
-                label="Sad Color"
-                onChange={(e) => {this.setState({sadColor: e.target.value})}}
-              >
-                {Object.keys(EMOTION_COLORS).map((color, i) => (
-                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ width: 120 }}>
-            <FormControl fullWidth>
-              <InputLabel>Calm Color</InputLabel>
-              <Select
-                value={this.state.calmColor}
-                label="Sad Color"
-                onChange={(e) => {this.setState({calmColor: e.target.value})}}
+                value={this.state.posColor}
+                label="Positive Color"
+                onChange={(e) => {this.setState({posColor: e.target.value})}}
               >
                 {Object.keys(EMOTION_COLORS).map((color, i) => (
                   <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
