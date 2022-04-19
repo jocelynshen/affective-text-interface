@@ -2,11 +2,50 @@ import React, { Component } from 'react'
 import {Recorder} from 'react-voice-recorder'
 import 'react-voice-recorder/dist/index.css'
 import axios from '../node_modules/axios';
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Container } from 'react-bootstrap';
+import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
 import ReactLoading from "react-loading";
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import PropTypes from 'prop-types';
+import Slider from '@mui/material/Slider';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
 
 // const BASE_URL = "http://10.31.83.90:5000/";
 const BASE_URL = "http://wall-e.media.mit.edu:5000/";
@@ -76,6 +115,18 @@ const EMOJI_MAP = {
   62: "😬",
   63: "✨",
 }
+const EMOTION_COLORS = {
+  red: "#B63E3E",
+  orange: "#E28112",
+  yellow: "#E4C111",
+  green: "#6F9D26",
+  blue: "#4278B6",
+  purple: "#6E46C3",
+  pink: "#B43BB8",
+  brown: "#906F51",
+  black: "#232323",
+  gray: "#707070",
+}
 
 class App extends Component {
   constructor(props) {
@@ -94,7 +145,15 @@ class App extends Component {
         }
       },
       outputData: [],
-      loading: false
+      loading: false,
+      groupSize: 3,
+      promptNum: 0,
+      angerColor: "red",
+      excitedColor: "yellow",
+      calmColor: "green",
+      sadColor: "blue",
+      neutralColor: "black",
+      includeEmojis: false,
     }
   }
 
@@ -133,7 +192,7 @@ class App extends Component {
     const self = this;
     const formData = new FormData();
     formData.append("audioFile", file);
-    formData.append("groupSize", 3)
+    formData.append("groupSize", this.state.groupSize);
     axios.post(BASE_URL + "upload/", formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -187,7 +246,12 @@ class App extends Component {
         }
       }
     }
-    return final_text_arr.join("")
+    const output = final_text_arr.join("");
+    if (!this.state.includeEmojis) {
+      console.log(output)
+      return output.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '');
+    }
+    return output;
   }
 
   getEmojis(emojis) {
@@ -203,31 +267,61 @@ class App extends Component {
   }
 
   generateStyle(features) {
-    const labelToColor = {
-      "neu": "black",
-      "neg": "red",
-      "pos": "gold",
-    }
-
     const style = {};
     const loudness = features.loudness;
-    const fontSize = `${Math.round(loudness * 72)}pt`;
-    style.fontSize = fontSize;
-    style.color = labelToColor[features.emotion_label];
+    const fontWeight = `${Math.round(loudness * 9) * 100}`;
+    style.fontSize = "24pt";
+    style.fontWeight = fontWeight;
+    style.color = EMOTION_COLORS[this.state.neutralColor]; // Neutral
+    if (loudness > .66) {
+      if (features.emotion_label === "neg") {
+        style.color = EMOTION_COLORS[this.state.angerColor]; // Angry
+      } else if (features.emotion_label === "pos") {
+        style.color = EMOTION_COLORS[this.state.excitedColor]; // Excited
+      }
+    } else if (loudness < .33) {
+      if (features.emotion_label === "neg") {
+        style.color = EMOTION_COLORS[this.state.sadColor]; // Sad
+      } else if (features.emotion_label === "pos") {
+        style.color = EMOTION_COLORS[this.state.calmColor]; // Calm
+      }
+    }
     // style.opacity = features.confidence;
     return style
   }
 
+  // handleGroupSizeSelect(e) {
+  //   this.setState({groupSize: e})
+  // }
+
   render() {
     return (
       <React.Fragment>
-        <Tabs className="m-3">
+        {/* <Tabs className="m-3">
           {this.state.textSamples.map((text, i) => (
             <Tab className="m-3" eventKey={i} key={i} title={`Prompt ${i}`}>
               {text}
             </Tab>
           ))}
-        </Tabs>
+        </Tabs> */}
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={this.state.promptNum}
+              onChange={(e, newVal) => {this.setState({promptNum: newVal})}}
+              aria-label="wrapped label tabs example"
+            >
+              {this.state.textSamples.map((_, i) => (
+                <Tab value={i} key={i} label={`Prompt ${i+1}`}/>
+              ))}
+            </Tabs>
+          </Box>
+          {this.state.textSamples.map((text, i) => (
+            <TabPanel index={i} key={i} value={this.state.promptNum}>
+              {text}
+            </TabPanel>
+          ))}
+        </Box>
 
         <Recorder
           record={true}
@@ -242,21 +336,115 @@ class App extends Component {
           hideHeader
         />
         <Container fluid>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Box sx={{ width: 240 }}>
+            <Typography gutterBottom>
+              Word Group Size
+            </Typography>
+            <Slider
+              // defaultValue={3}
+              value={this.state.groupSize}
+              onChange={(e) => {this.setState({groupSize: e.target.value})}}
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={1}
+              max={5}
+            />
+          </Box>
+          <Box sx={{ width: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Anger Color</InputLabel>
+              <Select
+                value={this.state.angerColor}
+                label="Anger Color"
+                onChange={(e) => {this.setState({angerColor: e.target.value})}}
+              >
+                {Object.keys(EMOTION_COLORS).map((color, i) => (
+                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Excited Color</InputLabel>
+              <Select
+                value={this.state.excitedColor}
+                label="Excited Color"
+                onChange={(e) => {this.setState({excitedColor: e.target.value})}}
+              >
+                {Object.keys(EMOTION_COLORS).map((color, i) => (
+                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Sad Color</InputLabel>
+              <Select
+                value={this.state.sadColor}
+                label="Sad Color"
+                onChange={(e) => {this.setState({sadColor: e.target.value})}}
+              >
+                {Object.keys(EMOTION_COLORS).map((color, i) => (
+                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Calm Color</InputLabel>
+              <Select
+                value={this.state.calmColor}
+                label="Sad Color"
+                onChange={(e) => {this.setState({calmColor: e.target.value})}}
+              >
+                {Object.keys(EMOTION_COLORS).map((color, i) => (
+                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <Box sx={{ width: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel>Neutral Color</InputLabel>
+              <Select
+                value={this.state.neutralColor}
+                label="Neutral Color"
+                onChange={(e) => {this.setState({neutralColor: e.target.value})}}
+              >
+                {Object.keys(EMOTION_COLORS).map((color, i) => (
+                  <MenuItem key={i} value={color} style={{color: EMOTION_COLORS[color]}}>{color}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <FormGroup>
+            <FormControlLabel control={<Switch checked={this.state.includeEmojis} onChange={(e) => {this.setState({includeEmojis: e.target.checked})}}/>} label="Include Emojis" />
+          </FormGroup>
+        </Stack>
+        </Container>
+        <Container fluid>
           Result
           {/*<span role="img" aria-label="label">*/}
           {/*    {String.fromCodePoint("0x263a")}*/}
           {/*</span>*/}
           <br/>
-          {this.state.loading ? <ReactLoading type="bubbles" color="#0000FF"
-                         height={100} width={50}/>: <></>}
-          {this.state.outputData.map((entry, i) =>
-            (
-              <span key={i} style={this.generateStyle(entry)}>
-                {` ${this.processText(entry)} ` }
-                {/*{this.getEmojis(entry.emojis)}*/}
-              </span>
-            )
-          )}
+          <Container className='result-container' fluid>
+            {this.state.loading ? <ReactLoading type="bubbles" color="#0000FF"
+                          height={100} width={50}/>: <></>}
+            {this.state.outputData.map((entry, i) =>
+              (
+                <span key={i} style={this.generateStyle(entry)}>
+                  {` ${this.processText(entry)} ` }
+                  {/*{this.getEmojis(entry.emojis)}*/}
+                </span>
+              )
+            )}
+          </Container>
         </Container>
 
       </React.Fragment>
