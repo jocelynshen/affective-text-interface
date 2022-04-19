@@ -3,7 +3,8 @@ import {Recorder} from 'react-voice-recorder'
 import 'react-voice-recorder/dist/index.css'
 import axios from '../node_modules/axios';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Container, Dropdown, DropdownButton } from 'react-bootstrap';
+import "react-voice-recorder/dist/index.css";
+import { Container } from "react-bootstrap";
 import ReactLoading from "react-loading";
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -130,7 +131,7 @@ const EMOTION_COLORS = {
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       textSamples: [],
@@ -142,7 +143,7 @@ class App extends Component {
           h: null,
           m: null,
           s: null,
-        }
+        },
       },
       outputData: [],
       loading: false,
@@ -159,26 +160,27 @@ class App extends Component {
 
   componentDidMount() {
     const self = this;
-    axios.get(BASE_URL + "textSamples/")
-    .then(function (response) {
-      // handle success
-      self.setState({textSamples: response.data.textSamples})
-      console.log(response);
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
+    axios
+      .get(BASE_URL + "textSamples/")
+      .then(function (response) {
+        // handle success
+        self.setState({ textSamples: response.data.textSamples });
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
   }
 
   handleAudioStop(data) {
-    console.log(data)
+    console.log(data);
     this.setState({ audioDetails: data });
   }
 
   handleAudioUpload(file) {
     console.log(file);
-    this.setState({loading: true});
+    this.setState({ loading: true });
     // axios.get("http://127.0.0.1:5000/testing/")
     //   .then(function (response) {
     //     // handle success
@@ -228,21 +230,21 @@ class App extends Component {
         h: null,
         m: null,
         s: null,
-      }
-    }
+      },
+    };
     this.setState({ audioDetails: reset });
   }
 
   processText(entry) {
-    const text = entry.word_groups
+    const text = entry.word_groups;
     const final_text_arr = [];
-    const emojis = this.getEmojis(entry.emojis)
-    const arr = text.split(".")
-    for (var i=0;i<arr.length;i++){
+    const emojis = this.getEmojis(entry.emojis);
+    const arr = text.split(".");
+    for (var i = 0; i < arr.length; i++) {
       if (arr[i].length > 0) {
-        final_text_arr.push(arr[i])
+        final_text_arr.push(arr[i]);
         if (emojis[i]) {
-          final_text_arr.push(emojis[i].join("") + ". ")
+          final_text_arr.push(emojis[i].join("") + ". ");
         }
       }
     }
@@ -256,14 +258,14 @@ class App extends Component {
 
   getEmojis(emojis) {
     let emoji_unicode = [];
-    for (var i=0;i<emojis.length;i++) {
+    for (var i = 0; i < emojis.length; i++) {
       let temp_emojis = [];
-      for (var j=2; j<3;j++) {
-        temp_emojis.push(EMOJI_MAP[emojis[i][j]])
+      for (var j = 2; j < 3; j++) {
+        temp_emojis.push(EMOJI_MAP[emojis[i][j]]);
       }
       emoji_unicode.push(temp_emojis);
     }
-    return emoji_unicode
+    return emoji_unicode;
   }
 
   generateStyle(features) {
@@ -286,8 +288,27 @@ class App extends Component {
         style.color = EMOTION_COLORS[this.state.calmColor]; // Calm
       }
     }
+
+    const speakingLength =
+      features.time_interval[1] - features.time_interval[0];
+    const speakingRate =
+      features.word_groups.replace(/\s/g, "").length / speakingLength;
+
+    // Normal: 8-18 letters per second
+    // WCAG guidelines: 0.12 times the font size (16px = 1rem)
+    if (speakingRate > 8 && speakingRate < 18) {
+      style.letterSpacing = "normal";
+    }
+    // Fast: >= 8 letters per second
+    else if (speakingRate >= 18) {
+      style.letterSpacing = "-.1rem";
+    }
+    // Slow: <= 18 letters per second
+    else if (speakingRate <= 8) {
+      style.letterSpacing = ".2rem";
+    }
     // style.opacity = features.confidence;
-    return style
+    return style;
   }
 
   // handleGroupSizeSelect(e) {
@@ -328,9 +349,9 @@ class App extends Component {
           title={"IM FINE"}
           audioURL={this.state.audioDetails.url}
           showUIAudio
-          handleAudioStop={data => this.handleAudioStop(data)}
-          handleOnChange={(value) => this.handleOnChange(value, 'firstname')}
-          handleAudioUpload={data => this.handleAudioUpload(data)}
+          handleAudioStop={(data) => this.handleAudioStop(data)}
+          handleOnChange={(value) => this.handleOnChange(value, "firstname")}
+          handleAudioUpload={(data) => this.handleAudioUpload(data)}
           handleReset={() => this.handleReset()}
           // mimeTypeToUseWhenRecording={'audio/wave'}
           hideHeader
@@ -446,10 +467,8 @@ class App extends Component {
             )}
           </Container>
         </Container>
-
       </React.Fragment>
-
-    )
+    );
   }
 }
 
