@@ -237,7 +237,6 @@ class App extends Component {
   }
 
   processText(entry) {
-    console.log("ENTRY", entry)
     const text = entry.word_groups;
     const final_text_arr = [];
     const emojis = this.getEmojis(entry.emojis);
@@ -256,7 +255,6 @@ class App extends Component {
     }
     const output = final_text_arr.join("");
     if (!this.state.includeEmojis) {
-      console.log(output)
       return output.replace(/[^\p{L}\p{N}\p{P}\p{Z}^$\n]/gu, '');
     }
     return output;
