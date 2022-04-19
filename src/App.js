@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
-import {Recorder} from 'react-voice-recorder'
-import 'react-voice-recorder/dist/index.css'
-import axios from '../node_modules/axios';
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
-import 'bootstrap/dist/css/bootstrap.css';
-import { Container } from 'react-bootstrap';
+import React, { Component } from "react";
+import { Recorder } from "react-voice-recorder";
+import "react-voice-recorder/dist/index.css";
+import axios from "../node_modules/axios";
+import Tabs from "react-bootstrap/Tabs";
+import Tab from "react-bootstrap/Tab";
+import "bootstrap/dist/css/bootstrap.css";
+import { Container } from "react-bootstrap";
 import ReactLoading from "react-loading";
 
 // const BASE_URL = "http://10.31.83.90:5000/";
@@ -75,11 +75,11 @@ const EMOJI_MAP = {
   61: "💙",
   62: "😬",
   63: "✨",
-}
+};
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       textSamples: [],
@@ -91,35 +91,36 @@ class App extends Component {
           h: null,
           m: null,
           s: null,
-        }
+        },
       },
       outputData: [],
-      loading: false
-    }
+      loading: false,
+    };
   }
 
   componentDidMount() {
     const self = this;
-    axios.get(BASE_URL + "textSamples/")
-    .then(function (response) {
-      // handle success
-      self.setState({textSamples: response.data.textSamples})
-      console.log(response);
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
+    axios
+      .get(BASE_URL + "textSamples/")
+      .then(function (response) {
+        // handle success
+        self.setState({ textSamples: response.data.textSamples });
+        console.log(response);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
   }
 
   handleAudioStop(data) {
-    console.log(data)
+    console.log(data);
     this.setState({ audioDetails: data });
   }
 
   handleAudioUpload(file) {
     console.log(file);
-    this.setState({loading: true});
+    this.setState({ loading: true });
     // axios.get("http://127.0.0.1:5000/testing/")
     //   .then(function (response) {
     //     // handle success
@@ -133,31 +134,31 @@ class App extends Component {
     const self = this;
     const formData = new FormData();
     formData.append("audioFile", file);
-    formData.append("groupSize", 3)
-    axios.post(BASE_URL + "upload/", formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-    .then(function (response) {
-      // handle success
-      console.log(response);
-      const response_data = response.data.output.data;
-      let json_responses = new Array(response_data.length);
-      // response_data.map((entry, i) => {(JSON.parse(entry))})
-      console.log(response_data)
-      for (var i=0;i<response_data.length;i++) {
-        json_responses[i] = JSON.parse(response_data[i]);
-      }
-      console.log(json_responses)
-      self.setState({loading: false})
-      self.setState({outputData: json_responses});
-
-    })
-    .catch(function (error) {
-      // handle error
-      console.log(error);
-    })
+    formData.append("groupSize", 3);
+    axios
+      .post(BASE_URL + "upload/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        const response_data = response.data.output.data;
+        let json_responses = new Array(response_data.length);
+        // response_data.map((entry, i) => {(JSON.parse(entry))})
+        console.log(response_data);
+        for (var i = 0; i < response_data.length; i++) {
+          json_responses[i] = JSON.parse(response_data[i]);
+        }
+        console.log(json_responses);
+        self.setState({ loading: false });
+        self.setState({ outputData: json_responses });
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
   }
 
   handleReset() {
@@ -169,53 +170,73 @@ class App extends Component {
         h: null,
         m: null,
         s: null,
-      }
-    }
+      },
+    };
     this.setState({ audioDetails: reset });
   }
 
   processText(entry) {
-    const text = entry.word_groups
+    const text = entry.word_groups;
     const final_text_arr = [];
-    const emojis = this.getEmojis(entry.emojis)
-    const arr = text.split(".")
-    for (var i=0;i<arr.length;i++){
+    const emojis = this.getEmojis(entry.emojis);
+    const arr = text.split(".");
+    for (var i = 0; i < arr.length; i++) {
       if (arr[i].length > 0) {
-        final_text_arr.push(arr[i])
+        final_text_arr.push(arr[i]);
         if (emojis[i]) {
-          final_text_arr.push(emojis[i].join("") + ". ")
+          final_text_arr.push(emojis[i].join("") + ". ");
         }
       }
     }
-    return final_text_arr.join("")
+    return final_text_arr.join("");
   }
 
   getEmojis(emojis) {
     let emoji_unicode = [];
-    for (var i=0;i<emojis.length;i++) {
+    for (var i = 0; i < emojis.length; i++) {
       let temp_emojis = [];
-      for (var j=2; j<3;j++) {
-        temp_emojis.push(EMOJI_MAP[emojis[i][j]])
+      for (var j = 2; j < 3; j++) {
+        temp_emojis.push(EMOJI_MAP[emojis[i][j]]);
       }
       emoji_unicode.push(temp_emojis);
     }
-    return emoji_unicode
+    return emoji_unicode;
   }
 
   generateStyle(features) {
     const labelToColor = {
-      "neu": "black",
-      "neg": "red",
-      "pos": "gold",
-    }
+      neu: "black",
+      neg: "red",
+      pos: "gold",
+    };
 
     const style = {};
     const loudness = features.loudness;
-    const fontSize = `${Math.round(loudness * 72)}pt`;
+    // const fontSize = `${Math.round(loudness * 72)}pt`;
+    const fontSize = "20px";
     style.fontSize = fontSize;
     style.color = labelToColor[features.emotion_label];
+    const speakingLength =
+      features.time_interval[1] - features.time_interval[0];
+    const speakingRate =
+      features.word_groups.split(" ").length / speakingLength;
+
+    // Normal: 1-4 words per second
+    // WCAG guidelines: 0.12 times the font size (16px = 1rem)
+    if (speakingRate > 1 && speakingRate < 4) {
+      style.letterSpacing = "normal";
+    }
+    // Fast: >= 4 words per second
+    else if (speakingRate >= 4) {
+      style.letterSpacing = "-.1rem";
+    }
+    // Slow: <= 1.5 words per second
+    else if (speakingRate <= 1) {
+      style.letterSpacing = ".2rem";
+    }
+    // console.log(speakingRate);
     // style.opacity = features.confidence;
-    return style
+    return style;
   }
 
   render() {
@@ -234,9 +255,9 @@ class App extends Component {
           title={"IM FINE"}
           audioURL={this.state.audioDetails.url}
           showUIAudio
-          handleAudioStop={data => this.handleAudioStop(data)}
-          handleOnChange={(value) => this.handleOnChange(value, 'firstname')}
-          handleAudioUpload={data => this.handleAudioUpload(data)}
+          handleAudioStop={(data) => this.handleAudioStop(data)}
+          handleOnChange={(value) => this.handleOnChange(value, "firstname")}
+          handleAudioUpload={(data) => this.handleAudioUpload(data)}
           handleReset={() => this.handleReset()}
           // mimeTypeToUseWhenRecording={'audio/wave'}
           hideHeader
@@ -246,22 +267,26 @@ class App extends Component {
           {/*<span role="img" aria-label="label">*/}
           {/*    {String.fromCodePoint("0x263a")}*/}
           {/*</span>*/}
-          <br/>
-          {this.state.loading ? <ReactLoading type="bubbles" color="#0000FF"
-                         height={100} width={50}/>: <></>}
-          {this.state.outputData.map((entry, i) =>
-            (
-              <span key={i} style={this.generateStyle(entry)}>
-                {` ${this.processText(entry)} ` }
-                {/*{this.getEmojis(entry.emojis)}*/}
-              </span>
-            )
+          <br />
+          {this.state.loading ? (
+            <ReactLoading
+              type="bubbles"
+              color="#0000FF"
+              height={100}
+              width={50}
+            />
+          ) : (
+            <></>
           )}
+          {this.state.outputData.map((entry, i) => (
+            <span key={i} style={this.generateStyle(entry)}>
+              {` ${this.processText(entry)} `}
+              {/*{this.getEmojis(entry.emojis)}*/}
+            </span>
+          ))}
         </Container>
-
       </React.Fragment>
-
-    )
+    );
   }
 }
 
