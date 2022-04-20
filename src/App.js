@@ -49,7 +49,8 @@ TabPanel.propTypes = {
 };
 
 // const BASE_URL = "http://10.31.83.90:5000/";
-const BASE_URL = "http://wall-e.media.mit.edu:5000/";
+// const BASE_URL = "http://wall-e.media.mit.edu:5000/";
+const BASE_URL = "http://matlaber7.media.mit.edu:5192/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -283,9 +284,10 @@ class App extends Component {
     style.fontWeight = fontWeight;
     style.color = EMOTION_COLORS[this.state.neutralColor]; // Neutral
 
-    if (features.emotion_label === "neg") {
+    const compound_score = features.emotion_label["compound"]
+    if (compound_score < -0.5) {
       style.color = EMOTION_COLORS[this.state.negColor];
-    } else if (features.emotion_label === "pos") {
+    } else if (compound_score > 0.5) {
       style.color = EMOTION_COLORS[this.state.posColor];
     } else {
       style.color = EMOTION_COLORS[this.state.neutralColor];
@@ -372,21 +374,21 @@ class App extends Component {
         />
         <Container fluid>
         <Stack direction="row" spacing={2} alignItems="center">
-          <Box sx={{ width: 240 }}>
-            <Typography gutterBottom>
-              Word Group Size
-            </Typography>
-            <Slider
-              // defaultValue={3}
-              value={this.state.groupSize}
-              onChange={(e) => {this.setState({groupSize: e.target.value})}}
-              valueLabelDisplay="auto"
-              step={1}
-              marks
-              min={1}
-              max={5}
-            />
-          </Box>
+          {/*<Box sx={{ width: 240 }}>*/}
+          {/*  <Typography gutterBottom>*/}
+          {/*    Word Group Size*/}
+          {/*  </Typography>*/}
+          {/*  <Slider*/}
+          {/*    // defaultValue={3}*/}
+          {/*    value={this.state.groupSize}*/}
+          {/*    onChange={(e) => {this.setState({groupSize: e.target.value})}}*/}
+          {/*    valueLabelDisplay="auto"*/}
+          {/*    step={1}*/}
+          {/*    marks*/}
+          {/*    min={1}*/}
+          {/*    max={5}*/}
+          {/*  />*/}
+          {/*</Box>*/}
           <Box sx={{ width: 120 }}>
             <FormControl fullWidth>
               <InputLabel>Negative Color</InputLabel>
