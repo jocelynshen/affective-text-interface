@@ -50,7 +50,7 @@ TabPanel.propTypes = {
 
 // const BASE_URL = "http://10.31.83.90:5000/";
 // const BASE_URL = "http://wall-e.media.mit.edu:5000/";
-const BASE_URL = "http://matlaber7.media.mit.edu:5192/";
+const BASE_URL = "https://prg-webhost.media.mit.edu:5010/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -182,15 +182,6 @@ class App extends Component {
   handleAudioUpload(file) {
     console.log(file);
     this.setState({ loading: true });
-    // axios.get("http://127.0.0.1:5000/testing/")
-    //   .then(function (response) {
-    //     // handle success
-    //     console.log(response);
-    //   })
-    //   .catch(function (error) {
-    //     // handle error
-    //     console.log(error);
-    //   })
 
     const self = this;
     const formData = new FormData();
