@@ -5,7 +5,7 @@ This project was developed for MIT's 6.835 course (Multimodal User Interfaces)
 
 ## Development Environment Setup
 * Install Webstorm and open this project
-* Run `npm install` to install all package dependencies
+* Run `npm install` or `yarn install` to install all package dependencies
 * Install serve by running `npm install -g serve`
 
 ## Running
@@ -15,7 +15,6 @@ This project was developed for MIT's 6.835 course (Multimodal User Interfaces)
 * To build the app for production to the `build` folder, run `npm run build`
 * See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-## Notes
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Code Explanation
+* `App.js` contains all the frontend code. Make sure to change the `BASE_URL` to where the server is running
+* `App.css` contains all the CSS styling
