@@ -1,7 +1,5 @@
-# 6.835 Project: Affective Text
+# Affective Text Interface
 This is the frontend React.js code for a web application that converts speech to affectively generated text.
-The backend code is located at https://github.com/jocelynshen/storytelling-service.
-This project was developed for MIT's 6.835 course (Multimodal User Interfaces)
 
 ## Development Environment Setup
 * Install Webstorm and open this project
