@@ -49,8 +49,8 @@ TabPanel.propTypes = {
 };
 
 // const BASE_URL = "http://10.31.83.90:5000/";
-// const BASE_URL = "http://wall-e.media.mit.edu:5000/";
-const BASE_URL = "https://matlaber7.media.mit.edu/";
+const BASE_URL = "http://wall-e.media.mit.edu:5000/";
+// const BASE_URL = "http://matlaber7.media.mit.edu:5000/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
