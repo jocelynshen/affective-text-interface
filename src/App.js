@@ -49,8 +49,8 @@ TabPanel.propTypes = {
 };
 
 // const BASE_URL = "http://10.31.83.90:5000/";
-const BASE_URL = "http://wall-e.media.mit.edu:5000/";
-// const BASE_URL = "http://matlaber7.media.mit.edu:5000/";
+// const BASE_URL = "http://wall-e.media.mit.edu:5000/";
+const BASE_URL = "http://matlaber7.media.mit.edu:5000/";
 const EMOJI_MAP = {
   0: "😂",
   1: "😒",
@@ -147,7 +147,9 @@ class App extends Component {
         },
       },
       outputData: [],
-      loading: false,
+      outputData2:[],
+      loading: true,
+      loading2: true,
       groupSize: 1,
       promptNum: 0,
       negColor: "red",
@@ -172,12 +174,57 @@ class App extends Component {
         // handle error
         console.log(error);
       });
+
+      axios.get(BASE_URL + "displayPositive/")
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        const response_data = response.data.output.data;
+        let json_responses = new Array(response_data.length);
+        // response_data.map((entry, i) => {(JSON.parse(entry))})
+        console.log(response_data)
+        for (var i=0;i<response_data.length;i++) {
+          json_responses[i] = JSON.parse(response_data[i]);
+        }
+        console.log(json_responses)
+        self.setState({loading: false})
+        self.setState({outputData: json_responses});
+  
+      })
+      .catch(function (error) {
+        // handle error
+        self.setState({loading: false})
+        console.log(error);
+      })
+
+      axios.get(BASE_URL + "displayNegative/")
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        const response_data = response.data.output.data;
+        let json_responses = new Array(response_data.length);
+        // response_data.map((entry, i) => {(JSON.parse(entry))})
+        console.log(response_data)
+        for (var i=0;i<response_data.length;i++) {
+          json_responses[i] = JSON.parse(response_data[i]);
+        }
+        console.log(json_responses)
+        self.setState({loading2: false})
+        self.setState({outputData2: json_responses});
+  
+      })
+      .catch(function (error) {
+        // handle error
+        self.setState({loading2: false})
+        console.log(error);
+      })
   }
 
   handleAudioStop(data) {
     console.log(data);
     this.setState({ audioDetails: data });
   }
+
 
   handleAudioUpload(file) {
     console.log(file);
@@ -473,6 +520,19 @@ class App extends Component {
               )
             )}
           </Container>
+          <Container className='result-container' fluid>
+            {this.state.loading2 ? <ReactLoading type="bubbles" color="#0000FF"
+                          height={100} width={50}/>: <></>}
+            {this.state.outputData2.map((entry, i) =>
+              (
+                <span key={i} style={this.generateStyle(entry)}>
+                  {` ${this.processText(entry)} ` }
+                  {/*{this.getEmojis(entry.emojis)}*/}
+                </span>
+              )
+            )}
+          </Container>
+          
         </Container>
       </React.Fragment>
     );
